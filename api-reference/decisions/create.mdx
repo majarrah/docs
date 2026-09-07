@@ -100,8 +100,29 @@ description: "Evaluate a property and get a structured verdict."
   Calculated price per square meter for this property.
 </ResponseField>
 
-<ResponseField name="benchmark" type="object">
-  Market benchmark data used for scoring (P25, median, P75 prices per sqm for this type/location).
+<ResponseField name="benchmark" type="object | null">
+  MOJ market data used for price scoring. `null` if no benchmark exists for the given city/district.
+
+  <Expandable title="benchmark fields">
+    <ResponseField name="median_sqm" type="number">
+      Median transaction price per sqm (SAR) for this city/district. The midpoint — half of transactions were above, half below.
+    </ResponseField>
+    <ResponseField name="p25_sqm" type="number">
+      25th percentile price per sqm. Properties priced at or below this are considered well-priced.
+    </ResponseField>
+    <ResponseField name="p75_sqm" type="number">
+      75th percentile price per sqm. Properties priced above this are considered expensive for the area.
+    </ResponseField>
+    <ResponseField name="year" type="number">
+      Year of the benchmark data (MOJ transaction year).
+    </ResponseField>
+    <ResponseField name="transaction_count" type="number">
+      Number of transactions used to compute the benchmark.
+    </ResponseField>
+    <ResponseField name="yoy_pct" type="number | null">
+      Year-over-year price change percentage vs. the prior year. `null` if no prior-year data is available.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 <ResponseField name="reasoning" type="object">
@@ -200,18 +221,21 @@ curl -X POST https://api.majarrah.io/v1/decisions \
 ```json 200 - reasoning: false
 {
   "verdict": "match",
-  "score": 81,
+  "score": 76,
   "breakdown": {
-    "price":    { "score": 88, "status": "pass" },
-    "location": { "score": 92, "status": "pass" },
-    "size":     { "score": 74, "status": "pass" },
-    "details":  { "score": 70, "status": "pass" }
+    "price":    { "score": 85, "status": "pass" },
+    "location": { "score": 90, "status": "pass" },
+    "size":     { "score": 82, "status": "pass" },
+    "details":  { "score": 65, "status": "warn" }
   },
   "price_per_sqm": 8947,
   "benchmark": {
-    "p25": 8200,
-    "median": 9100,
-    "p75": 10500
+    "median_sqm": 9100,
+    "p25_sqm": 8200,
+    "p75_sqm": 10500,
+    "year": 2025,
+    "transaction_count": 143,
+    "yoy_pct": 4
   },
   "decisions_used": 1,
   "decisions_remaining": 99
@@ -221,24 +245,27 @@ curl -X POST https://api.majarrah.io/v1/decisions \
 ```json 200 - reasoning: true
 {
   "verdict": "match",
-  "score": 81,
+  "score": 76,
   "breakdown": {
-    "price":    { "score": 88, "status": "pass" },
-    "location": { "score": 92, "status": "pass" },
-    "size":     { "score": 74, "status": "pass" },
-    "details":  { "score": 70, "status": "pass" }
+    "price":    { "score": 85, "status": "pass" },
+    "location": { "score": 90, "status": "pass" },
+    "size":     { "score": 82, "status": "pass" },
+    "details":  { "score": 65, "status": "warn" }
   },
   "price_per_sqm": 8947,
   "benchmark": {
-    "p25": 8200,
-    "median": 9100,
-    "p75": 10500
+    "median_sqm": 9100,
+    "p25_sqm": 8200,
+    "p75_sqm": 10500,
+    "year": 2025,
+    "transaction_count": 143,
+    "yoy_pct": 4
   },
   "reasoning": {
-    "reasoning_en": "Strong fit overall. Priced 4% below the area median for similar apartments. Floor 8 with 2 bedrooms at 95 sqm is above the area median for this price bracket.",
-    "reasoning_ar": "مطابقة قوية بشكل عام. السعر أقل بنسبة 4% من متوسط المنطقة لشقق مماثلة. الطابق الثامن بغرفتين على مساحة 95 متراً يفوق المتوسط في هذه الفئة السعرية.",
-    "key_factors": ["Priced below area median", "Good floor level", "Strong location demand"],
-    "risk_flags": []
+    "reasoning_en": "Strong fit overall. Priced 2% below the Al Corniche median of 9,100 SAR/sqm. The Al Khobar corniche commands consistent demand and saw 4% YoY price growth in 2025. Two bedrooms at 95 sqm is above the area median for this price bracket.",
+    "reasoning_ar": "مطابقة قوية بشكل عام. السعر أقل بنسبة 2% من متوسط الكورنيش البالغ 9,100 ريال/م². يشهد كورنيش الخبر طلباً ثابتاً وارتفع سعره 4% سنوياً في 2025. غرفتان على 95م² تفوق متوسط المنطقة في هذه الفئة السعرية.",
+    "key_factors": ["Priced below area median", "Strong YoY price growth", "High-demand location"],
+    "risk_flags": ["Limited transaction count in district"]
   },
   "decisions_used": 3,
   "decisions_remaining": 97
