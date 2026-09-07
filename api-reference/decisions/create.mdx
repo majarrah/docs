@@ -6,90 +6,63 @@ description: "Evaluate a property and get a structured verdict."
 
 ## Request body
 
-### Always required
-
 <ParamField body="property" type="object" required>
   The property to evaluate.
 
   <Expandable title="property fields">
     <ParamField body="type" type="string" required>
-      Property type. One of: `apartment`, `villa`, `land`, `shop`, `office`
+      Property type. One of: `apartment`, `villa`, `land`, `commercial`, `office`
     </ParamField>
     <ParamField body="price" type="number" required>
-      Asking price in local currency (AED or SAR).
+      Asking price in SAR.
     </ParamField>
-    <ParamField body="location" type="string" required>
-      Area, district, or city. E.g. `"Dubai Marina"`, `"Al Nakheel, Riyadh"`.
-    </ParamField>
-    <ParamField body="size_sqm" type="number" required>
+    <ParamField body="area" type="number" required>
       Total area in square meters.
+    </ParamField>
+    <ParamField body="bedrooms" type="number">
+      Number of bedrooms.
+    </ParamField>
+    <ParamField body="bathrooms" type="number">
+      Number of bathrooms.
+    </ParamField>
+    <ParamField body="floor" type="number">
+      Floor number. Use `0` for ground floor.
+    </ParamField>
+    <ParamField body="age" type="number">
+      Property age in years.
+    </ParamField>
+    <ParamField body="parking" type="boolean">
+      Whether parking is available.
+    </ParamField>
+    <ParamField body="furnished" type="boolean">
+      Whether the property is furnished.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="location" type="object" required>
+  Property location.
+
+  <Expandable title="location fields">
+    <ParamField body="city" type="string" required>
+      City name. E.g. `"Riyadh"`, `"Jeddah"`, `"Al Khobar"`.
+    </ParamField>
+    <ParamField body="district" type="string" required>
+      District or neighbourhood. E.g. `"Al Malqa"`, `"Al Corniche"`.
+    </ParamField>
+    <ParamField body="lat" type="number">
+      Latitude (optional, improves location scoring).
+    </ParamField>
+    <ParamField body="lng" type="number">
+      Longitude (optional, improves location scoring).
     </ParamField>
   </Expandable>
 </ParamField>
 
 <ParamField body="reasoning" type="boolean" required>
-  `false` - scoring engine only (1 credit). Returns score and breakdown, no explanation.
+  `false` - algorithmic scoring only (1 decision). Returns score and breakdown instantly.
 
-  `true` - scoring engine + AI reasoning (3 credits). Adds a `reasoning` string to the response.
-</ParamField>
-
-### Type-specific required fields
-
-<Tabs>
-  <Tab title="apartment">
-    <ParamField body="property.bedrooms" type="number" required>
-      Number of bedrooms.
-    </ParamField>
-    <ParamField body="property.bathrooms" type="number" required>
-      Number of bathrooms.
-    </ParamField>
-    <ParamField body="property.floor" type="number" required>
-      Floor number. Use `0` for ground floor.
-    </ParamField>
-    <ParamField body="property.elevator_available" type="boolean" required>
-      Whether the building has a working elevator.
-    </ParamField>
-  </Tab>
-  <Tab title="villa">
-    <ParamField body="property.bedrooms" type="number" required>
-      Number of bedrooms.
-    </ParamField>
-    <ParamField body="property.bathrooms" type="number" required>
-      Number of bathrooms.
-    </ParamField>
-  </Tab>
-  <Tab title="land">
-    <ParamField body="property.zoning" type="string" required>
-      Land use classification. One of: `residential`, `commercial`, `industrial`
-    </ParamField>
-  </Tab>
-  <Tab title="shop / office">
-    <ParamField body="property.floor" type="number" required>
-      Floor number. Use `0` for ground floor.
-    </ParamField>
-  </Tab>
-</Tabs>
-
-### Optional
-
-<ParamField body="purpose" type="string">
-  Buyer intent. `own_use` or `investment`. Shapes how the scoring weights price vs. ROI.
-</ParamField>
-
-<ParamField body="budget" type="number">
-  Maximum budget. When provided, price scoring is relative to this value.
-</ParamField>
-
-<ParamField body="min_roi" type="number">
-  Minimum acceptable ROI percentage. Only relevant when `purpose` is `investment`.
-</ParamField>
-
-<ParamField body="context" type="string">
-  Free-text context for the AI. Only used when `reasoning: true`. E.g. `"relocating from Riyadh, needs school proximity"`.
-</ParamField>
-
-<ParamField body="language" type="string" default="ar">
-  Response language for the `reasoning` field. `ar` or `en`. Only used when `reasoning: true`.
+  `true` - scoring + AI reasoning (3 decisions). Adds a `reasoning` object with English and Arabic explanations.
 </ParamField>
 
 ---
@@ -97,15 +70,11 @@ description: "Evaluate a property and get a structured verdict."
 ## Response
 
 <ResponseField name="verdict" type="string">
-  `match`, `partial`, or `no_match`. Derived from `score`: 70+ is match, 40-69 is partial, below 40 is no match.
+  `match`, `partial`, or `no_match`. Derived from `score`: 70+ is match, 40–69 is partial, below 40 is no match.
 </ResponseField>
 
 <ResponseField name="score" type="number">
   Overall score from 0 to 100.
-</ResponseField>
-
-<ResponseField name="confidence" type="string">
-  `high`, `medium`, or `low`. Reflects how much data was provided - more optional fields raise confidence.
 </ResponseField>
 
 <ResponseField name="breakdown" type="object">
@@ -113,29 +82,52 @@ description: "Evaluate a property and get a structured verdict."
 
   <Expandable title="breakdown fields">
     <ResponseField name="price" type="object">
-      `score` (0-100) and `status` (`pass`, `warn`, `fail`). Compares property price against market benchmarks.
+      `score` (0–100) and `status` (`pass`, `warn`, `fail`). Compares property price against market benchmarks.
     </ResponseField>
     <ResponseField name="location" type="object">
-      Area demand, trend, and match to any `location_preferences`.
+      `score` and `status`. Area demand and market trend.
     </ResponseField>
     <ResponseField name="size" type="object">
-      Price per sqm vs. market average for the type and location.
+      `score` and `status`. Price per sqm vs. market average for the type and location.
     </ResponseField>
     <ResponseField name="details" type="object">
-      Type-specific factors: bedrooms, floor, elevator, zoning, etc.
+      `score` and `status`. Type-specific factors: bedrooms, floor, age, parking, etc.
     </ResponseField>
   </Expandable>
 </ResponseField>
 
-<ResponseField name="reasoning" type="string">
-  Plain-language explanation of the verdict. Only present when `reasoning: true`.
+<ResponseField name="price_per_sqm" type="number">
+  Calculated price per square meter for this property.
 </ResponseField>
 
-<ResponseField name="credits_used" type="number">
-  Credits consumed by this request. `1` for scoring only, `3` for reasoning.
+<ResponseField name="benchmark" type="object">
+  Market benchmark data used for scoring (P25, median, P75 prices per sqm for this type/location).
 </ResponseField>
 
-<ResponseField name="credits_remaining" type="number">
+<ResponseField name="reasoning" type="object">
+  Only present when `reasoning: true`.
+
+  <Expandable title="reasoning fields">
+    <ResponseField name="reasoning_en" type="string">
+      2–3 sentence investment rationale in English.
+    </ResponseField>
+    <ResponseField name="reasoning_ar" type="string">
+      2–3 sentence investment rationale in Arabic.
+    </ResponseField>
+    <ResponseField name="key_factors" type="string[]">
+      Up to 3 positive factors supporting the verdict.
+    </ResponseField>
+    <ResponseField name="risk_flags" type="string[]">
+      Risk factors to be aware of.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="decisions_used" type="number">
+  Decisions consumed by this request. `1` for scoring only, `3` for reasoning.
+</ResponseField>
+
+<ResponseField name="decisions_remaining" type="number">
   Your remaining decision balance after this request.
 </ResponseField>
 
@@ -152,16 +144,16 @@ curl -X POST https://api.majarrah.io/v1/decisions \
     "property": {
       "type": "apartment",
       "price": 850000,
-      "location": "Dubai Marina",
-      "size_sqm": 95,
+      "area": 95,
       "bedrooms": 2,
       "bathrooms": 2,
-      "floor": 8,
-      "elevator_available": true
+      "floor": 8
     },
-    "reasoning": false,
-    "purpose": "investment",
-    "budget": 900000
+    "location": {
+      "city": "Al Khobar",
+      "district": "Al Corniche"
+    },
+    "reasoning": false
   }'
 ```
 
@@ -173,15 +165,15 @@ curl -X POST https://api.majarrah.io/v1/decisions \
     "property": {
       "type": "villa",
       "price": 2100000,
-      "location": "Al Nakheel, Riyadh",
-      "size_sqm": 420,
+      "area": 420,
       "bedrooms": 4,
       "bathrooms": 5
     },
-    "reasoning": true,
-    "purpose": "own_use",
-    "language": "en",
-    "context": "family of 5, need garden, school proximity important"
+    "location": {
+      "city": "Riyadh",
+      "district": "Al Nakheel"
+    },
+    "reasoning": true
   }'
 ```
 
@@ -193,13 +185,13 @@ curl -X POST https://api.majarrah.io/v1/decisions \
     "property": {
       "type": "land",
       "price": 500000,
-      "location": "North Riyadh",
-      "size_sqm": 600,
-      "zoning": "residential"
+      "area": 600
     },
-    "reasoning": false,
-    "purpose": "investment",
-    "min_roi": 8
+    "location": {
+      "city": "Riyadh",
+      "district": "North Riyadh"
+    },
+    "reasoning": false
   }'
 ```
 </CodeGroup>
@@ -209,15 +201,20 @@ curl -X POST https://api.majarrah.io/v1/decisions \
 {
   "verdict": "match",
   "score": 81,
-  "confidence": "high",
   "breakdown": {
     "price":    { "score": 88, "status": "pass" },
     "location": { "score": 92, "status": "pass" },
     "size":     { "score": 74, "status": "pass" },
     "details":  { "score": 70, "status": "pass" }
   },
-  "credits_used": 1,
-  "credits_remaining": 49
+  "price_per_sqm": 8947,
+  "benchmark": {
+    "p25": 8200,
+    "median": 9100,
+    "p75": 10500
+  },
+  "decisions_used": 1,
+  "decisions_remaining": 99
 }
 ```
 
@@ -225,41 +222,50 @@ curl -X POST https://api.majarrah.io/v1/decisions \
 {
   "verdict": "match",
   "score": 81,
-  "confidence": "high",
   "breakdown": {
     "price":    { "score": 88, "status": "pass" },
     "location": { "score": 92, "status": "pass" },
     "size":     { "score": 74, "status": "pass" },
     "details":  { "score": 70, "status": "pass" }
   },
-  "reasoning": "Strong fit overall. Priced 4% below the area average for similar apartments in Dubai Marina. Floor 8 with elevator is favorable. Two bedrooms at 95 sqm is above the area median for this price bracket.",
-  "credits_used": 3,
-  "credits_remaining": 47
+  "price_per_sqm": 8947,
+  "benchmark": {
+    "p25": 8200,
+    "median": 9100,
+    "p75": 10500
+  },
+  "reasoning": {
+    "reasoning_en": "Strong fit overall. Priced 4% below the area median for similar apartments. Floor 8 with 2 bedrooms at 95 sqm is above the area median for this price bracket.",
+    "reasoning_ar": "مطابقة قوية بشكل عام. السعر أقل بنسبة 4% من متوسط المنطقة لشقق مماثلة. الطابق الثامن بغرفتين على مساحة 95 متراً يفوق المتوسط في هذه الفئة السعرية.",
+    "key_factors": ["Priced below area median", "Good floor level", "Strong location demand"],
+    "risk_flags": []
+  },
+  "decisions_used": 3,
+  "decisions_remaining": 97
 }
 ```
 
-```json 402 - Insufficient credits
+```json 401 - Invalid API key
 {
-  "error": {
-    "code": "INSUFFICIENT_CREDITS",
-    "message": "You don't have enough credits for this request.",
-    "details": {
-      "credits_required": 3,
-      "credits_remaining": 1
-    }
-  }
+  "error": "invalid_api_key",
+  "message": "Provide a valid Bearer token. API keys start with sk- and can be created in your dashboard."
 }
 ```
 
-```json 422 - Missing fields
+```json 402 - Insufficient decisions
 {
-  "error": {
-    "code": "MISSING_REQUIRED_FIELDS",
-    "message": "Some required fields are missing.",
-    "details": {
-      "missing": ["property.bedrooms", "property.elevator_available"]
-    }
-  }
+  "error": "insufficient_decisions",
+  "message": "This request requires 3 decisions. Your workspace has 1. Purchase more at app.majarrah.io.",
+  "required": 3,
+  "balance": 1
+}
+```
+
+```json 422 - Validation error
+{
+  "error": "validation_error",
+  "message": "property.area must be a positive number (sqm).",
+  "field": "property.area"
 }
 ```
 </ResponseExample>
