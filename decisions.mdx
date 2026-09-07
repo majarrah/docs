@@ -1,0 +1,64 @@
+---
+title: "AI Decisions"
+description: "How Majarrah's decision engine works and what decisions cost."
+---
+
+## What is a decision?
+
+A decision is a structured verdict on a property. Instead of just showing you a listing, Majarrah reasons about it — comparing price against market benchmarks, scoring the location, evaluating the specs, and returning a clear verdict.
+
+Every decision returns:
+
+- A **verdict** - `match`, `partial`, or `no_match`
+- A **score** from 0 to 100
+- A **breakdown** across price, location, size, and property-specific details
+- Optionally, a **reasoning** paragraph in Arabic or English
+
+## Two modes
+
+<CardGroup cols={2}>
+  <Card title="Scoring" icon="chart-bar">
+    Pure algorithmic comparison against market data. Returns the score and breakdown instantly. Costs **1 decision**.
+  </Card>
+  <Card title="Reasoning" icon="brain">
+    Scoring + AI explanation. Adds a plain-language paragraph explaining the verdict. Costs **3 decisions**.
+  </Card>
+</CardGroup>
+
+## Decision packs
+
+Decisions are purchased in packs. All packs include a **24-hour refund guarantee**.
+
+| Pack | Decisions | Best for |
+|------|-----------|---------|
+| Starter | 5 | Evaluating a shortlist |
+| Standard | 20 | Active property search |
+| Pro | 50 | Brokers and investors |
+
+You can buy packs from your [billing page](/brokers/billing) inside the dashboard.
+
+## How scoring works
+
+The engine scores every property across four weighted buckets:
+
+| Bucket | Weight | What it measures |
+|--------|--------|-----------------|
+| Price | 30% | Property price vs. market average for the location, type, and size |
+| Location | 20% | Area demand, market trend, proximity to preferences |
+| Size | 20% | Price per sqm vs. market benchmark |
+| Details | 30% | Type-specific factors: bedrooms, floor, elevator, zoning, etc. |
+
+Each bucket returns a score from 0–100 and a status (`pass`, `warn`, or `fail`). The weighted average becomes the final score.
+
+**Verdict thresholds:**
+- 70–100 → `match`
+- 40–69 → `partial`
+- 0–39 → `no_match`
+
+## Confidence
+
+The confidence level (`high`, `medium`, or `low`) reflects how much data was available to make the decision. Providing more property details raises confidence.
+
+<Note>
+  Decisions never go stale — if you want a fresh verdict on the same property, simply request a new one. Market benchmarks update continuously.
+</Note>

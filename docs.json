@@ -1,72 +1,130 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "name": "Majarrah Docs",
+  "description": "Majarrah platform documentation and Decision API reference.",
+  "favicon": "/favicon.ico",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#111111",
+    "light": "#FFFFFF",
+    "dark": "#111111"
   },
-  "favicon": "/favicon.svg",
+  "background": {
+    "decoration": "windows"
+  },
+  "api": {
+    "mdx": {
+      "server": "https://api.majarrah.io/v1",
+      "auth": {
+        "method": "bearer"
+      }
+    }
+  },
   "navigation": {
-    "pages": [
+    "tabs": [
       {
-        "group": "Getting Started",
+        "tab": "Home",
+        "icon": "house",
         "pages": [
-          "index",
-          "quickstart"
+          "index"
+        ]
+      },
+      {
+        "tab": "Documentation",
+        "icon": "book-open",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "quickstart",
+              "decisions"
+            ]
+          },
+          {
+            "group": "For Buyers",
+            "pages": [
+              "buyers/search",
+              "buyers/ai-agent",
+              "buyers/inquiries",
+              "buyers/saved"
+            ]
+          },
+          {
+            "group": "For Sellers",
+            "pages": [
+              "sellers/getting-started",
+              "sellers/listings",
+              "sellers/inquiries",
+              "sellers/bookings",
+              "sellers/whatsapp"
+            ]
+          },
+          {
+            "group": "For Brokers",
+            "pages": [
+              "brokers/getting-started",
+              "brokers/verification",
+              "brokers/listings",
+              "brokers/inquiries",
+              "brokers/bookings",
+              "brokers/billing",
+              "brokers/whatsapp",
+              "brokers/team"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "icon": "code",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "api-reference/authentication",
+              "api-reference/errors"
+            ]
+          },
+          {
+            "group": "Decisions",
+            "pages": [
+              "api-reference/decisions/create"
+            ]
+          }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "dark": "/logo/dark.svg",
+    "href": "https://majarrah.io"
   },
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:support@majarrah.io"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.mintlify.com"
+      "label": "Open App",
+      "href": "https://app.majarrah.io"
     }
-  },
-  "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude",
-      "perplexity",
-      "mcp",
-      "cursor",
-      "vscode"
-    ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/majarrah_io"
+    }
+  },
+  "seo": {
+    "indexing": "all",
+    "metatags": {
+      "og:image": "https://majarrah.io/og.png",
+      "og:site_name": "Majarrah Docs",
+      "twitter:card": "summary_large_image",
+      "twitter:image": "https://majarrah.io/og.png"
     }
   }
 }

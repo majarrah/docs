@@ -1,0 +1,39 @@
+---
+title: "Errors"
+description: "All errors follow a consistent shape with a machine-readable code and a human-readable message."
+---
+
+## Error shape
+
+```json
+{
+  "error": {
+    "code": "MISSING_REQUIRED_FIELDS",
+    "message": "Some required fields are missing.",
+    "details": {
+      "missing": ["property.bedrooms", "property.floor"]
+    }
+  }
+}
+```
+
+## Error reference
+
+| HTTP | Code | Message | Details |
+|------|------|---------|---------|
+| `400` | `INVALID_JSON` | Request body is not valid JSON. | - |
+| `401` | `MISSING_TOKEN` | Authorization header is required. | - |
+| `401` | `INVALID_TOKEN` | API key is invalid or expired. | - |
+| `402` | `INSUFFICIENT_CREDITS` | You don't have enough credits for this request. | `credits_required`, `credits_remaining` |
+| `422` | `MISSING_REQUIRED_FIELDS` | Some required fields are missing. | `missing: [...]` |
+| `422` | `INVALID_PROPERTY_TYPE` | Invalid property type. | `allowed: [...]` |
+| `422` | `INVALID_FIELD_TYPE` | One or more fields have the wrong type. | `fields: [{ field, expected }]` |
+| `429` | `RATE_LIMIT_EXCEEDED` | Too many requests. Slow down. | `retry_after` (seconds) |
+| `503` | `AI_UNAVAILABLE` | Reasoning service is temporarily unavailable. | - |
+| `500` | `INTERNAL_ERROR` | Something went wrong on our end. | - |
+
+## Notes
+
+- `503 AI_UNAVAILABLE` only affects requests with `reasoning: true`. Requests with `reasoning: false` run the scoring engine only and are never affected by AI availability.
+- `402 INSUFFICIENT_CREDITS` is returned before any compute runs - your balance is checked first.
+- On `429`, respect the `retry_after` value before retrying.

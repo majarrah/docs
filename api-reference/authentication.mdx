@@ -1,0 +1,49 @@
+---
+title: "Authentication"
+description: "All API requests require a Bearer token."
+---
+
+## Get your API key
+
+API keys are issued from your broker or developer dashboard inside the Majarrah app.
+
+Go to **Dashboard - API** and click **Generate API Key**. Each key is tied to your account's decision balance.
+
+<Warning>
+  Keep your API key secret. Never expose it in client-side code or public repositories.
+</Warning>
+
+## Using your key
+
+Pass the key as a Bearer token in the `Authorization` header on every request.
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Example
+
+```bash
+curl -X POST https://api.majarrah.io/v1/decisions \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "property": {
+      "type": "apartment",
+      "price": 850000,
+      "location": "Dubai Marina",
+      "size_sqm": 95,
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "floor": 8,
+      "elevator_available": true
+    },
+    "reasoning": false
+  }'
+```
+
+## Credit balance
+
+Every API key has a decision balance. You can check your remaining credits in the response of any `/decisions` call via `credits_remaining`, or from your dashboard.
+
+When your balance reaches zero, all requests return `402 Insufficient Credits` until you top up.
