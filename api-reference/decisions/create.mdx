@@ -144,11 +144,11 @@ description: "Evaluate a property and get a structured verdict."
   </Expandable>
 </ResponseField>
 
-<ResponseField name="decisions_used" type="number">
+<ResponseField name="credits_used" type="number">
   Decisions consumed by this request. `1` for scoring only, `3` for reasoning.
 </ResponseField>
 
-<ResponseField name="decisions_remaining" type="number">
+<ResponseField name="credits_remaining" type="number">
   Your remaining decision balance after this request.
 </ResponseField>
 
@@ -237,8 +237,8 @@ curl -X POST https://api.majarrah.io/v1/decisions \
     "transaction_count": 143,
     "yoy_pct": 4
   },
-  "decisions_used": 1,
-  "decisions_remaining": 99
+  "credits_used": 1,
+  "credits_remaining": 99
 }
 ```
 
@@ -267,8 +267,8 @@ curl -X POST https://api.majarrah.io/v1/decisions \
     "key_factors": ["Priced below area median", "Strong YoY price growth", "High-demand location"],
     "risk_flags": ["Limited transaction count in district"]
   },
-  "decisions_used": 3,
-  "decisions_remaining": 97
+  "credits_used": 3,
+  "credits_remaining": 97
 }
 ```
 

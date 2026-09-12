@@ -50,6 +50,6 @@ curl -X POST https://api.majarrah.io/v1/decisions \
 
 ## Decision balance
 
-Every API key is tied to your workspace's decision balance. You can check your remaining balance in the response of any `/decisions` call via `decisions_remaining`, or from **Dashboard → Settings → API Credits**.
+Every API key is tied to your workspace's credit balance. You can check your remaining balance in the response of any `/decisions` call via `credits_remaining`, or from **Dashboard → Settings → API Credits**.
 
 When your balance reaches zero, all requests return `402 insufficient_decisions` until you top up.
