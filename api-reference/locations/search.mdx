@@ -60,19 +60,19 @@ At least one of `city` or `district` is required.
 </ResponseField>
 
 <ResponseField name="total" type="number">
-  Number of results returned (max 20 per request).
+  Number of results returned. Max 20 for search requests. No cap when using `districts=true`.
 </ResponseField>
 
-<ResponseField name="city" type="string">
-  The `city` value that was searched. Only present when `city` was passed.
+<ResponseField name="city" type="object">
+  Only present when `districts=true`. The matched city's `id`, `name_ar`, and `name_en`.
 </ResponseField>
 
 <ResponseField name="district" type="string">
-  The `district` value that was searched. Only present when `district` was passed.
+  The `district` value that was searched. Only present on district search responses.
 </ResponseField>
 
 <ResponseField name="message" type="string">
-  Only present when `city` was passed alongside `district` but no city matched. Contains a hint to verify the city name.
+  Only present when `city` was passed alongside `district` (or `districts=true`) but no city matched. Contains a hint to verify the city name.
 </ResponseField>
 
 ---
@@ -144,28 +144,16 @@ curl "https://api.majarrah.io/v1/locations?city=Riyadh&districts=true" \
 
 ```json 200 - All districts of a city
 {
+  "city": {
+    "id": 57834912,
+    "name_ar": "الرياض",
+    "name_en": "Riyadh"
+  },
   "results": [
-    {
-      "type": "district",
-      "id": 23741856,
-      "name_ar": "الملقا",
-      "name_en": "Al Malqa",
-      "city_id": 57834912,
-      "city_name_ar": "الرياض",
-      "city_name_en": "Riyadh"
-    },
-    {
-      "type": "district",
-      "id": 34892710,
-      "name_ar": "النخيل",
-      "name_en": "Al Nakheel",
-      "city_id": 57834912,
-      "city_name_ar": "الرياض",
-      "city_name_en": "Riyadh"
-    }
+    { "type": "district", "id": 23741856, "name_ar": "الملقا", "name_en": "Al Malqa" },
+    { "type": "district", "id": 34892710, "name_ar": "النخيل", "name_en": "Al Nakheel" }
   ],
-  "total": 312,
-  "city": "Riyadh"
+  "total": 312
 }
 ```
 
