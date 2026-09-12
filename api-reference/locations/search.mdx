@@ -1,17 +1,23 @@
 ---
 title: "Search Locations"
 api: "GET /locations"
-description: "Search cities and districts by name. Returns numeric IDs to use in POST /decisions."
+description: "Look up cities and districts by name. Returns numeric IDs to use in POST /decisions."
 ---
 
 ## Query parameters
 
-<ParamField query="q" type="string" required>
-  Search query. Minimum 2 characters. Accepts Arabic or English, and handles partial/transliterated input (e.g. `"ryad"` matches `"Riyadh"`).
-</ParamField>
+At least one of `city` or `district` is required.
 
 <ParamField query="city" type="string">
-  Narrow results to districts within a specific city. Accepts the city's Arabic name, English name, or city ID.
+  City name to search. Accepts Arabic or English, and handles partial/transliterated input (e.g. `"ryad"` matches `"Riyadh"`). Minimum 2 characters.
+
+  When used alone, returns matching city results. When used alongside `district`, scopes the district search to that city.
+</ParamField>
+
+<ParamField query="district" type="string">
+  District or neighbourhood name to search. Accepts Arabic or English. Minimum 2 characters.
+
+  When used alone, searches districts across all cities. When used with `city`, scopes results to that city.
 </ParamField>
 
 ---
@@ -53,8 +59,12 @@ description: "Search cities and districts by name. Returns numeric IDs to use in
   Number of results returned (max 20 per request).
 </ResponseField>
 
-<ResponseField name="query" type="string">
-  The query string that was searched.
+<ResponseField name="city" type="string">
+  The `city` value that was searched. Only present when `city` was passed.
+</ResponseField>
+
+<ResponseField name="district" type="string">
+  The `district` value that was searched. Only present when `district` was passed.
 </ResponseField>
 
 ---
@@ -63,17 +73,22 @@ description: "Search cities and districts by name. Returns numeric IDs to use in
 
 <CodeGroup>
 ```bash Search by city name (English)
-curl "https://api.majarrah.io/v1/locations?q=ryad" \
+curl "https://api.majarrah.io/v1/locations?city=ryad" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 ```bash Search by city name (Arabic)
-curl "https://api.majarrah.io/v1/locations?q=جدة" \
+curl "https://api.majarrah.io/v1/locations?city=جدة" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 ```bash Search districts within a city
-curl "https://api.majarrah.io/v1/locations?q=malqa&city=Riyadh" \
+curl "https://api.majarrah.io/v1/locations?district=malqa&city=Riyadh" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```bash Search districts across all cities
+curl "https://api.majarrah.io/v1/locations?district=corniche" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 </CodeGroup>
@@ -91,11 +106,11 @@ curl "https://api.majarrah.io/v1/locations?q=malqa&city=Riyadh" \
     }
   ],
   "total": 1,
-  "query": "ryad"
+  "city": "ryad"
 }
 ```
 
-```json 200 - District search
+```json 200 - District search (scoped to city)
 {
   "results": [
     {
@@ -109,14 +124,23 @@ curl "https://api.majarrah.io/v1/locations?q=malqa&city=Riyadh" \
     }
   ],
   "total": 1,
-  "query": "malqa"
+  "city": "Riyadh",
+  "district": "malqa"
 }
 ```
 
-```json 400 - Query too short
+```json 400 - Missing params
 {
-  "error": "invalid_query",
-  "message": "Query must be at least 2 characters."
+  "error": "missing_params",
+  "message": "Provide at least one of: city, district."
+}
+```
+
+```json 400 - Value too short
+{
+  "error": "invalid_param",
+  "message": "city must be at least 2 characters.",
+  "field": "city"
 }
 ```
 
