@@ -67,6 +67,10 @@ At least one of `city` or `district` is required.
   The `district` value that was searched. Only present when `district` was passed.
 </ResponseField>
 
+<ResponseField name="message" type="string">
+  Only present when `city` was passed alongside `district` but no city matched. Contains a hint to verify the city name.
+</ResponseField>
+
 ---
 
 ## Examples
@@ -126,6 +130,16 @@ curl "https://api.majarrah.io/v1/locations?district=corniche" \
   "total": 1,
   "city": "Riyadh",
   "district": "malqa"
+}
+```
+
+```json 200 - City not found (with district)
+{
+  "results": [],
+  "total": 0,
+  "city": "xyz",
+  "district": "malqa",
+  "message": "No city matched 'xyz'. Verify the city name using ?city=xyz."
 }
 ```
 
