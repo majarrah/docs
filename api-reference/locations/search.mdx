@@ -20,6 +20,10 @@ At least one of `city` or `district` is required.
   When used alone, searches districts across all cities. When used with `city`, scopes results to that city.
 </ParamField>
 
+<ParamField query="districts" type="boolean">
+  Pass `true` alongside `city` to return all districts of that city. No search is performed — every district is returned.
+</ParamField>
+
 ---
 
 ## Response
@@ -95,6 +99,11 @@ curl "https://api.majarrah.io/v1/locations?district=malqa&city=Riyadh" \
 curl "https://api.majarrah.io/v1/locations?district=corniche" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
+
+```bash All districts of a city
+curl "https://api.majarrah.io/v1/locations?city=Riyadh&districts=true" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
 </CodeGroup>
 
 <ResponseExample>
@@ -130,6 +139,33 @@ curl "https://api.majarrah.io/v1/locations?district=corniche" \
   "total": 1,
   "city": "Riyadh",
   "district": "malqa"
+}
+```
+
+```json 200 - All districts of a city
+{
+  "results": [
+    {
+      "type": "district",
+      "id": 23741856,
+      "name_ar": "الملقا",
+      "name_en": "Al Malqa",
+      "city_id": 57834912,
+      "city_name_ar": "الرياض",
+      "city_name_en": "Riyadh"
+    },
+    {
+      "type": "district",
+      "id": 34892710,
+      "name_ar": "النخيل",
+      "name_en": "Al Nakheel",
+      "city_id": 57834912,
+      "city_name_ar": "الرياض",
+      "city_name_en": "Riyadh"
+    }
+  ],
+  "total": 312,
+  "city": "Riyadh"
 }
 ```
 
