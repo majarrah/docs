@@ -1,0 +1,129 @@
+---
+title: "Search Locations"
+api: "GET /locations"
+description: "Search cities and districts by name. Returns numeric IDs to use in POST /decisions."
+---
+
+## Query parameters
+
+<ParamField query="q" type="string" required>
+  Search query. Minimum 2 characters. Accepts Arabic or English, and handles partial/transliterated input (e.g. `"ryad"` matches `"Riyadh"`).
+</ParamField>
+
+<ParamField query="city" type="string">
+  Narrow results to districts within a specific city. Accepts the city's Arabic name, English name, or city ID.
+</ParamField>
+
+---
+
+## Response
+
+<ResponseField name="results" type="array">
+  Matching cities and/or districts, ordered by type (cities first).
+
+  <Expandable title="result fields">
+    <ResponseField name="type" type="string">
+      `"city"` or `"district"`.
+    </ResponseField>
+    <ResponseField name="id" type="number">
+      Unique numeric ID. Pass this as `city_id` or `district_id` in `POST /decisions`.
+    </ResponseField>
+    <ResponseField name="name_ar" type="string">
+      Official Arabic name.
+    </ResponseField>
+    <ResponseField name="name_en" type="string">
+      English transliteration.
+    </ResponseField>
+    <ResponseField name="district_count" type="number">
+      Number of districts in this city. Only present on `type: "city"` results.
+    </ResponseField>
+    <ResponseField name="city_id" type="number">
+      ID of the parent city. Only present on `type: "district"` results.
+    </ResponseField>
+    <ResponseField name="city_name_ar" type="string">
+      Arabic name of the parent city. Only present on `type: "district"` results.
+    </ResponseField>
+    <ResponseField name="city_name_en" type="string">
+      English name of the parent city. Only present on `type: "district"` results.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="total" type="number">
+  Number of results returned (max 20 per request).
+</ResponseField>
+
+<ResponseField name="query" type="string">
+  The query string that was searched.
+</ResponseField>
+
+---
+
+## Examples
+
+<CodeGroup>
+```bash Search by city name (English)
+curl "https://api.majarrah.io/v1/locations?q=ryad" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```bash Search by city name (Arabic)
+curl "https://api.majarrah.io/v1/locations?q=%D8%AC%D8%AF%D8%A9" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```bash Search districts within a city
+curl "https://api.majarrah.io/v1/locations?q=malqa&city=Riyadh" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+</CodeGroup>
+
+<ResponseExample>
+```json 200 - City search
+{
+  "results": [
+    {
+      "type": "city",
+      "id": 57834912,
+      "name_ar": "الرياض",
+      "name_en": "Riyadh",
+      "district_count": 312
+    }
+  ],
+  "total": 1,
+  "query": "ryad"
+}
+```
+
+```json 200 - District search
+{
+  "results": [
+    {
+      "type": "district",
+      "id": 23741856,
+      "name_ar": "الملقا",
+      "name_en": "Al Malqa",
+      "city_id": 57834912,
+      "city_name_ar": "الرياض",
+      "city_name_en": "Riyadh"
+    }
+  ],
+  "total": 1,
+  "query": "malqa"
+}
+```
+
+```json 400 - Query too short
+{
+  "error": "invalid_query",
+  "message": "Query must be at least 2 characters."
+}
+```
+
+```json 401 - Unauthorized
+{
+  "error": "unauthorized",
+  "message": "Valid Bearer API key required."
+}
+```
+</ResponseExample>

@@ -4,6 +4,10 @@ api: "POST /decisions"
 description: "Evaluate a property and get a structured verdict."
 ---
 
+<Tip>
+  Not sure which city or district name to use? Use [GET /locations](https://docs.majarrah.io/api-reference/locations/search) to search by name and get the exact numeric IDs to pass here.
+</Tip>
+
 ## Request body
 
 <ParamField body="property" type="object" required>
@@ -41,14 +45,20 @@ description: "Evaluate a property and get a structured verdict."
 </ParamField>
 
 <ParamField body="location" type="object" required>
-  Property location.
+  Property location. Pass either numeric IDs (recommended) from [GET /locations](/api-reference/locations/search), or raw string names.
 
   <Expandable title="location fields">
-    <ParamField body="city" type="string" required>
-      City name. E.g. `"Riyadh"`, `"Jeddah"`, `"Al Khobar"`.
+    <ParamField body="district_id" type="number">
+      District ID from `GET /locations`. Resolves both city and district automatically — no need to pass `city_id` or strings separately.
     </ParamField>
-    <ParamField body="district" type="string" required>
-      District or neighbourhood. E.g. `"Al Malqa"`, `"Al Corniche"`.
+    <ParamField body="city_id" type="number">
+      City ID from `GET /locations`. Use alongside `district` string if you have the city ID but not the district ID.
+    </ParamField>
+    <ParamField body="city" type="string">
+      City name string. E.g. `"Riyadh"`, `"Jeddah"`, `"Al Khobar"`. Required if not using `city_id` or `district_id`.
+    </ParamField>
+    <ParamField body="district" type="string">
+      District or neighbourhood string. E.g. `"Al Malqa"`, `"Al Corniche"`. Required if not using `district_id`.
     </ParamField>
     <ParamField body="lat" type="number">
       Latitude (optional, improves location scoring).
@@ -211,6 +221,25 @@ curl -X POST https://api.majarrah.io/v1/decisions \
     "location": {
       "city": "Riyadh",
       "district": "North Riyadh"
+    },
+    "reasoning": false
+  }'
+```
+
+```bash Using location IDs
+curl -X POST https://api.majarrah.io/v1/decisions \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "property": {
+      "type": "apartment",
+      "price": 850000,
+      "area": 95,
+      "bedrooms": 2,
+      "bathrooms": 2
+    },
+    "location": {
+      "district_id": 23741856
     },
     "reasoning": false
   }'

@@ -86,6 +86,12 @@
             ]
           },
           {
+            "group": "Locations",
+            "pages": [
+              "api-reference/locations/search"
+            ]
+          },
+          {
             "group": "Decisions",
             "pages": [
               "api-reference/decisions/create"
