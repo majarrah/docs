@@ -79,6 +79,10 @@ description: "Evaluate a property and get a structured verdict."
 
 ## Response
 
+<ResponseField name="object" type="string">
+  Always `"decision"`.
+</ResponseField>
+
 <ResponseField name="verdict" type="string">
   `match`, `partial`, or `no_match`. Derived from `score`: 70+ is match, 40–69 is partial, below 40 is no match.
 </ResponseField>
@@ -249,6 +253,7 @@ curl -X POST https://api.majarrah.io/v1/decisions \
 <ResponseExample>
 ```json 200 - reasoning: false
 {
+  "object": "decision",
   "verdict": "match",
   "score": 76,
   "breakdown": {
@@ -273,6 +278,7 @@ curl -X POST https://api.majarrah.io/v1/decisions \
 
 ```json 200 - reasoning: true
 {
+  "object": "decision",
   "verdict": "match",
   "score": 76,
   "breakdown": {

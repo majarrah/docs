@@ -21,22 +21,30 @@ At least one of `city` or `district` is required.
 </ParamField>
 
 <ParamField query="districts" type="boolean">
-  Pass `true` alongside `city` to return all districts of that city. No search is performed — every district is returned.
+  Pass `true` alongside `city` to return all districts of that city as a city object. No search is performed — every district is returned.
 </ParamField>
 
 ---
 
 ## Response
 
-<ResponseField name="results" type="array">
-  Matching cities and/or districts, ordered by type (cities first).
+### Search response (`object: "list"`)
 
-  <Expandable title="result fields">
-    <ResponseField name="type" type="string">
+Returned for city and district searches.
+
+<ResponseField name="object" type="string">
+  Always `"list"` for search responses.
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Matching cities and/or districts, max 20 per request.
+
+  <Expandable title="item fields">
+    <ResponseField name="object" type="string">
       `"city"` or `"district"`.
     </ResponseField>
     <ResponseField name="id" type="number">
-      Unique numeric ID. Pass this as `city_id` or `district_id` in `POST /decisions`.
+      Unique numeric ID. Pass as `city_id` or `district_id` in `POST /decisions`.
     </ResponseField>
     <ResponseField name="name_ar" type="string">
       Official Arabic name.
@@ -45,34 +53,50 @@ At least one of `city` or `district` is required.
       English transliteration.
     </ResponseField>
     <ResponseField name="district_count" type="number">
-      Number of districts in this city. Only present on `type: "city"` results.
+      Number of districts. Only on `object: "city"` items.
     </ResponseField>
     <ResponseField name="city_id" type="number">
-      ID of the parent city. Only present on `type: "district"` results.
+      Parent city ID. Only on `object: "district"` items.
     </ResponseField>
     <ResponseField name="city_name_ar" type="string">
-      Arabic name of the parent city. Only present on `type: "district"` results.
+      Arabic name of the parent city. Only on `object: "district"` items.
     </ResponseField>
     <ResponseField name="city_name_en" type="string">
-      English name of the parent city. Only present on `type: "district"` results.
+      English name of the parent city. Only on `object: "district"` items.
     </ResponseField>
   </Expandable>
 </ResponseField>
 
 <ResponseField name="total" type="number">
-  Number of results returned. Max 20 for search requests. No cap when using `districts=true`.
-</ResponseField>
-
-<ResponseField name="city" type="object">
-  Only present when `districts=true`. The matched city's `id`, `name_ar`, and `name_en`.
-</ResponseField>
-
-<ResponseField name="district" type="string">
-  The `district` value that was searched. Only present on district search responses.
+  Number of items returned.
 </ResponseField>
 
 <ResponseField name="message" type="string">
-  Only present when `city` was passed alongside `district` (or `districts=true`) but no city matched. Contains a hint to verify the city name.
+  Only present when `city` was supplied but no city matched. Contains a hint to verify the city name.
+</ResponseField>
+
+### City object response (`object: "city"`)
+
+Returned when `districts=true` is passed alongside `city`.
+
+<ResponseField name="object" type="string">
+  Always `"city"`.
+</ResponseField>
+
+<ResponseField name="id" type="number">
+  City numeric ID.
+</ResponseField>
+
+<ResponseField name="name_ar" type="string">
+  Official Arabic name.
+</ResponseField>
+
+<ResponseField name="name_en" type="string">
+  English transliteration.
+</ResponseField>
+
+<ResponseField name="districts" type="array">
+  All districts in this city. Each item has `id`, `name_ar`, `name_en`.
 </ResponseField>
 
 ---
@@ -109,25 +133,26 @@ curl "https://api.majarrah.io/v1/locations?city=Riyadh&districts=true" \
 <ResponseExample>
 ```json 200 - City search
 {
-  "results": [
+  "object": "list",
+  "data": [
     {
-      "type": "city",
+      "object": "city",
       "id": 57834912,
       "name_ar": "الرياض",
       "name_en": "Riyadh",
       "district_count": 312
     }
   ],
-  "total": 1,
-  "city": "ryad"
+  "total": 1
 }
 ```
 
 ```json 200 - District search (scoped to city)
 {
-  "results": [
+  "object": "list",
+  "data": [
     {
-      "type": "district",
+      "object": "district",
       "id": 23741856,
       "name_ar": "الملقا",
       "name_en": "Al Malqa",
@@ -136,33 +161,28 @@ curl "https://api.majarrah.io/v1/locations?city=Riyadh&districts=true" \
       "city_name_en": "Riyadh"
     }
   ],
-  "total": 1,
-  "city": "Riyadh",
-  "district": "malqa"
+  "total": 1
 }
 ```
 
 ```json 200 - All districts of a city
 {
-  "city": {
-    "id": 57834912,
-    "name_ar": "الرياض",
-    "name_en": "Riyadh"
-  },
-  "results": [
-    { "type": "district", "id": 23741856, "name_ar": "الملقا", "name_en": "Al Malqa" },
-    { "type": "district", "id": 34892710, "name_ar": "النخيل", "name_en": "Al Nakheel" }
-  ],
-  "total": 312
+  "object": "city",
+  "id": 57834912,
+  "name_ar": "الرياض",
+  "name_en": "Riyadh",
+  "districts": [
+    { "id": 23741856, "name_ar": "الملقا", "name_en": "Al Malqa" },
+    { "id": 34892710, "name_ar": "النخيل", "name_en": "Al Nakheel" }
+  ]
 }
 ```
 
-```json 200 - City not found (with district)
+```json 200 - City not found
 {
-  "results": [],
+  "object": "list",
+  "data": [],
   "total": 0,
-  "city": "xyz",
-  "district": "malqa",
   "message": "No city matched 'xyz'. Verify the city name using ?city=xyz."
 }
 ```
