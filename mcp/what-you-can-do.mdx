@@ -37,19 +37,6 @@ Everything a buyer can do, plus:
 - All buyer tools, plus:
 - Project CRUD, widget config, knowledge base management, inbox reads, lead promotion — the same surface your team uses in the developer dashboard.
 
-## As a platform admin
-
-Additive on top of your buyer/broker/developer tools:
-
-- Full moderation queues (listings, FAL, CR).
-- `admin_list_workspaces` / `admin_update_workspace` / `admin_grant_workspace_trial`.
-- Ghost broker seeding: `admin_upsert_ghost_broker`, `admin_import_ghost_property`, `admin_create_ghost_invite`, `admin_send_ghost_invite_email`.
-- Guided workflow prompt: `seed_ghost_broker_from_listing` — feed it an external listing URL and Claude runs the whole scrape → seed → invite flow.
-
-<Note>
-  Admin tools only appear when your email is on the Majarrah platform admin allow-list.
-</Note>
-
 ## Examples
 
 **"Find me a villa under 2M SAR in North Riyadh with at least 4 bedrooms."**
@@ -61,5 +48,5 @@ Claude calls `buyer_price_intel` with a plausible listing and returns the distri
 **"Reply to inquiry #abc123 saying we can offer a viewing Thursday at 6pm."**
 Claude calls `broker_reply_to_inquiry` and, if you say yes, also creates the viewing with `buyer_check_viewing_availability` + `buyer_book_viewing`.
 
-**"Seed a ghost broker from `https://sa.aqar.fm/…`"**
-As an admin, invoke the `seed_ghost_broker_from_listing` prompt with the URL. Claude scrapes, dedupes by FAL id, imports the listing, and gives you back a claim link to send.
+**"Show me every listing I've saved that's under 900k SAR."**
+Claude calls `buyer_list_saved_properties` and filters the result client-side.

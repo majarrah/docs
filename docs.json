@@ -24,14 +24,12 @@
     "tabs": [
       {
         "tab": "Home",
-        "icon": "house",
         "pages": [
           "index"
         ]
       },
       {
         "tab": "Documentation",
-        "icon": "book-open",
         "groups": [
           {
             "group": "Get Started",
@@ -90,21 +88,29 @@
               "developers/team",
               "developers/api-keys"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "MCP",
+        "groups": [
           {
-            "group": "Claude & MCP",
+            "group": "Get Started",
             "pages": [
               "mcp/overview",
-              "mcp/connecting-claude",
-              "mcp/what-you-can-do",
-              "mcp/oauth-flow"
+              "mcp/connecting-claude"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "mcp/what-you-can-do"
             ]
           }
         ]
       },
       {
         "tab": "API Reference",
-        "icon": "code",
         "groups": [
           {
             "group": "Get Started",
