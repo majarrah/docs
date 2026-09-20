@@ -1,0 +1,59 @@
+---
+title: "Knowledge Base"
+description: "Teach the widget your project brochures, payment plans, and policies."
+---
+
+## Why it matters
+
+Without a knowledge base, your widget can only answer from Majarrah's public project + unit data. That's fine for basic price and availability questions. To handle real buyer conversations — payment plans, HOA fees, handover timelines, financing partners — you need to feed the widget your own material.
+
+## What you can upload
+
+<CardGroup cols={2}>
+  <Card title="PDFs" icon="file-pdf">
+    Brochures, technical spec sheets, payment plan documents.
+  </Card>
+  <Card title="Text snippets" icon="file-lines">
+    Short FAQ entries, cancellation policies, viewing hours.
+  </Card>
+  <Card title="URLs" icon="link">
+    Public pages on your website — we crawl and re-index them.
+  </Card>
+  <Card title="Structured notes" icon="clipboard-list">
+    Key-value facts (e.g. "Handover: Q3 2027", "Escrow: Al Rajhi").
+  </Card>
+</CardGroup>
+
+## Add an entry
+
+<Steps>
+  <Step title="Open the knowledge base">
+    Go to **AI Agent → Knowledge Base** in your dashboard.
+  </Step>
+  <Step title="Pick a source type">
+    PDF, URL, or plain text.
+  </Step>
+  <Step title="Attach it to a scope">
+    Global (applies to every widget answer) or per-project (only used when the buyer is asking about that project).
+  </Step>
+  <Step title="Save">
+    The widget indexes new material within about a minute. You'll see a green **Indexed** badge when it's live.
+  </Step>
+</Steps>
+
+## Update or remove
+
+Every entry has an edit and delete action. Deleting an entry removes it from indexing immediately — old widget answers that cited it are unaffected, but new questions will no longer draw from it.
+
+## How the widget uses it
+
+When a buyer asks a question:
+
+1. The AI looks up the current project (if any) and pulls project-scoped notes first
+2. It then pulls relevant global notes based on semantic similarity
+3. Answers are generated **only** from your data + Majarrah's structured project + unit data
+4. If nothing matches, the AI says so and offers to connect a sales rep
+
+<Note>
+  The knowledge base is private. Only your team can read it, and only your widget can query it. Other developers on Majarrah never see your material.
+</Note>

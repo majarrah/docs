@@ -1,0 +1,61 @@
+---
+title: "The Widget"
+description: "Embed Majarrah's AI assistant on your own website in one line."
+---
+
+## What the widget does
+
+The Majarrah **widget** is an on-site AI chat that answers buyer questions about your projects in real time — pricing, availability, floor plans, payment terms, delivery dates, brochure links. Every conversation is captured as a lead in your inbox, so nothing slips through.
+
+It's trained on:
+
+- Your project + unit data on Majarrah
+- Your uploaded knowledge base (brochures, FAQs, policies — see [Knowledge Base](/developers/widget-knowledge-base))
+- Live market data (city/district benchmarks) so the AI can contextualize price
+- Nothing else — the widget never leaks another developer's information
+
+## Install it
+
+Go to **Settings → Widget** in your dashboard. Copy the script tag and paste it before the closing `</body>` of every page you want the widget on.
+
+```html
+<script
+  src="https://cdn.majarrah.io/widget.js"
+  data-developer="<yourslug>"
+  async
+></script>
+```
+
+That's the whole install. The widget appears as a floating chat button in the bottom-right (or bottom-left in RTL). Users click, ask, and get answers — every message flows into your **Inbox**.
+
+## Customize appearance
+
+From **Settings → Widget**, adjust:
+
+- **Position**: bottom-right / bottom-left
+- **Primary color**: matches your brand
+- **Welcome message**: what the widget says on first open
+- **Locale default**: Arabic or English (auto-detects from browser, but you can force one)
+- **Show project picker**: let visitors pick a project on open
+- **Trigger delay**: how long before the widget nudges idle visitors
+
+Changes are live within seconds — no re-deploy.
+
+## What the widget won't do
+
+<Note>
+  The widget never fabricates unit availability, pricing, or handover dates. If your Majarrah data or knowledge base doesn't cover a question, the AI explicitly says so and offers to connect the buyer with your sales team. That handoff creates a lead in your CRM.
+</Note>
+
+## Test before you ship
+
+Open **AI Agent → Test** in your dashboard. This is a chat with the same brain your visitors will talk to, using the same knowledge base and project data. Ask hard questions before your first customer does.
+
+<CardGroup cols={2}>
+  <Card title="Feed the knowledge base" icon="book" href="/developers/widget-knowledge-base">
+    Upload brochures and policies so the widget answers accurately.
+  </Card>
+  <Card title="Track conversations" icon="inbox" href="/developers/widget-inbox">
+    See every visitor thread as it happens.
+  </Card>
+</CardGroup>

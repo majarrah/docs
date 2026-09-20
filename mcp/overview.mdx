@@ -1,0 +1,53 @@
+---
+title: "Overview"
+description: "What the Majarrah MCP server is and why you'd use it."
+---
+
+## What is MCP?
+
+MCP (Model Context Protocol) is an open standard that lets AI assistants — Claude, ChatGPT, Cursor, Gemini and others — talk to your data through a single unified interface. Instead of copy-pasting property specs into a chat, the assistant queries Majarrah directly and reasons on live data.
+
+## What Majarrah's MCP server gives you
+
+<CardGroup cols={2}>
+  <Card title="Search real inventory" icon="magnifying-glass">
+    Ask Claude "find me a 3-bedroom villa under 2M in Riyadh" and it queries the live listing catalog.
+  </Card>
+  <Card title="Get AI verdicts" icon="brain">
+    Trigger a Majarrah decision on any listing without opening the app.
+  </Card>
+  <Card title="Manage as a broker" icon="briefcase">
+    Create listings, respond to inquiries, update leads — all from the assistant.
+  </Card>
+  <Card title="Run your developer widget" icon="messages">
+    Read visitor conversations, update the knowledge base, publish new projects.
+  </Card>
+</CardGroup>
+
+## Who it's for
+
+- **Buyers and investors** who want an assistant with real market data
+- **Brokers** who want to manage their workspace from a chat interface
+- **Developers** who want to integrate the widget inbox with their AI workflows
+- **Agencies** building custom AI apps on top of Majarrah's decision engine
+
+## How it works
+
+Majarrah runs an MCP server at `https://api.majarrah.io/mcp`. Any MCP-capable client connects to it, authenticates as you (OAuth), and gets access to a set of tools scoped to your role — buyer, broker, developer, admin, or any combination.
+
+The available tools are dynamically generated from your role:
+
+- A pure buyer sees search + inquiry + booking tools
+- A broker also sees property management + CRM tools
+- A developer sees project + widget + KB tools
+- All buyers can also try `whoami` and `ping`
+
+<Note>
+  Everything Majarrah shows you in the UI is available via MCP. Nothing more. Your assistant cannot see other users' data, cannot bypass moderation, and cannot spend credits you don't have.
+</Note>
+
+## Get started
+
+<Card title="Connect Claude" icon="link" href="/mcp/connecting-claude">
+  Add Majarrah as a connector in Claude Desktop or claude.ai and start using it in one minute.
+</Card>

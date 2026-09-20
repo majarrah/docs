@@ -1,0 +1,113 @@
+---
+title: "Search properties"
+api: "GET https://api.majarrah.io/v1/properties"
+description: "Full-text and filter search over Majarrah's published property catalog."
+---
+
+Returns published, moderation-approved listings that match the given filters. Public — no authentication required.
+
+## Query parameters
+
+<ParamField query="q" type="string">
+  Free-text query on title, description, city, and district.
+</ParamField>
+
+<ParamField query="city" type="string">
+  City name in Arabic or English. Case-insensitive.
+</ParamField>
+
+<ParamField query="district" type="string">
+  District name in Arabic or English.
+</ParamField>
+
+<ParamField query="type" type="string">
+  Property type slug: `villa`, `apartment`, `commercial-land`, etc. See [Locations](/api-reference/locations/search) for the full list.
+</ParamField>
+
+<ParamField query="min_price_sar" type="number">
+  Minimum price in SAR (inclusive).
+</ParamField>
+
+<ParamField query="max_price_sar" type="number">
+  Maximum price in SAR (inclusive).
+</ParamField>
+
+<ParamField query="min_beds" type="integer">
+  Minimum bedrooms.
+</ParamField>
+
+<ParamField query="max_beds" type="integer">
+  Maximum bedrooms.
+</ParamField>
+
+<ParamField query="min_area_sqm" type="number">
+  Minimum area in square meters.
+</ParamField>
+
+<ParamField query="max_area_sqm" type="number">
+  Maximum area in square meters.
+</ParamField>
+
+<ParamField query="limit" type="integer" default="20">
+  Results per page (1-50).
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Starting offset for pagination.
+</ParamField>
+
+## Response
+
+<ResponseField name="properties" type="array">
+  Array of property objects. Each includes:
+
+  <Expandable title="Property fields">
+    <ResponseField name="id" type="uuid" />
+    <ResponseField name="title_en" type="string" />
+    <ResponseField name="title_ar" type="string" />
+    <ResponseField name="property_type" type="string" />
+    <ResponseField name="price_sar" type="number" />
+    <ResponseField name="area_sqm" type="number" />
+    <ResponseField name="bedrooms" type="integer" />
+    <ResponseField name="bathrooms" type="integer" />
+    <ResponseField name="city_en" type="string" />
+    <ResponseField name="district_en" type="string" />
+    <ResponseField name="image_urls" type="array" />
+    <ResponseField name="ai_bullets_en" type="array" description="Short AI-generated selling points, if available" />
+    <ResponseField name="listed_at" type="ISO 8601 timestamp" />
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="count" type="integer">
+  Number of results returned (up to `limit`).
+</ResponseField>
+
+<ResponseField name="offset" type="integer">
+  Echoed offset for pagination.
+</ResponseField>
+
+## Example
+
+```bash
+curl "https://api.majarrah.io/v1/properties?city=Riyadh&max_price_sar=1000000&limit=5"
+```
+
+```json
+{
+  "properties": [
+    {
+      "id": "e39a8b2b-...",
+      "title_en": "3-bedroom villa in Al Yasmin",
+      "price_sar": 580000,
+      "area_sqm": 265,
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "city_en": "Riyadh",
+      "district_en": "Al Yasmin",
+      "ai_bullets_en": ["Priced below district median", "Warranties included"]
+    }
+  ],
+  "count": 1,
+  "offset": 0
+}
+```

@@ -1,0 +1,73 @@
+---
+title: "Book a viewing"
+api: "POST https://api.majarrah.io/v1/bookings"
+description: "Schedule a viewing for a property at one of the broker's available slots."
+---
+
+Creates a viewing booking. The broker is notified immediately and can confirm, propose a new time, or decline.
+
+## Request body
+
+<ParamField body="property_id" type="uuid" required>
+  The ID of the property to view.
+</ParamField>
+
+<ParamField body="scheduled_at" type="ISO 8601 timestamp" required>
+  When the viewing should happen. Must match one of the broker's available slots — check with the availability endpoint first.
+</ParamField>
+
+<ParamField body="user_phone" type="string">
+  Override the phone number the broker will call you on. Defaults to the phone on the buyer's profile.
+</ParamField>
+
+<ParamField body="notes" type="string">
+  Optional note visible to the broker, e.g. "coming with my wife".
+</ParamField>
+
+## Response
+
+<ResponseField name="booking" type="object">
+  <Expandable title="Fields">
+    <ResponseField name="id" type="uuid" />
+    <ResponseField name="property_id" type="uuid" />
+    <ResponseField name="scheduled_at" type="ISO 8601 timestamp" />
+    <ResponseField name="status" type="string" description="One of `pending`, `confirmed`, `cancelled`, `completed`" />
+    <ResponseField name="created_at" type="ISO 8601 timestamp" />
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="charged" type="boolean">
+  Whether a lead credit was charged to the broker's workspace for this booking.
+</ResponseField>
+
+## Example
+
+```bash
+curl https://api.majarrah.io/v1/bookings \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "property_id": "e39a8b2b-...",
+    "scheduled_at": "2026-09-25T18:00:00+03:00",
+    "notes": "Coming with my wife"
+  }'
+```
+
+```json
+{
+  "booking": {
+    "id": "bkg-1a2b3c...",
+    "property_id": "e39a8b2b-...",
+    "scheduled_at": "2026-09-25T18:00:00+03:00",
+    "status": "pending"
+  },
+  "charged": true
+}
+```
+
+## Errors
+
+- **`slot_unavailable`** — the requested time isn't a broker-open slot.
+- **`slot_already_booked`** — someone else booked this slot first.
+- **`property_not_found`** — the `property_id` doesn't exist or is unpublished.
+- **`self_booking_forbidden`** — you can't book your own listing.

@@ -1,0 +1,60 @@
+---
+title: "API Keys"
+description: "Generate keys for server-to-server integration with your Majarrah workspace."
+---
+
+## When you need an API key
+
+An API key lets your own systems talk to Majarrah without a browser session — sync inventory from your CRM, push new projects from your ERP, mirror leads into HubSpot / Salesforce.
+
+You don't need a key for:
+
+- Rendering the widget (the widget uses a public `data-developer` slug)
+- Team members logging into the dashboard (they use their own account)
+
+You **do** need one for:
+
+- Programmatic listing creates/updates
+- Pulling leads out into your own CRM
+- Custom AI Decision integrations
+- Any server-side automation
+
+## Create a key
+
+<Steps>
+  <Step title="Open Settings → API Keys">
+    From your dashboard sidebar.
+  </Step>
+  <Step title="Click Create key">
+    Give it a label (e.g. `crm-sync-prod`) so you know where it's used.
+  </Step>
+  <Step title="Copy the secret">
+    The secret is shown once. Store it in your secret manager immediately. You cannot recover it later.
+  </Step>
+</Steps>
+
+## Use it
+
+Every API request includes the key in the `Authorization` header:
+
+```bash
+curl https://api.majarrah.io/v1/... \
+  -H "Authorization: Bearer $MAJARRAH_API_KEY"
+```
+
+See [API Reference → Authentication](/api-reference/authentication) for full details on request signing, rate limits, and errors.
+
+## Rotate or revoke
+
+Every key on your list has a **Rotate** and **Revoke** action:
+
+- **Rotate** issues a fresh secret and gives you a 24-hour grace window where both old and new work. Use it to swap keys without downtime.
+- **Revoke** invalidates the key immediately. Use it if you suspect a secret was leaked.
+
+## Key hygiene
+
+<Note>
+  Never commit an API key to source control. Never share one over email or chat. If a key was ever exposed publicly — even briefly — revoke and rotate it immediately.
+</Note>
+
+Rotate keys every 90 days as a matter of routine. Give every automation its own key so revoking one doesn't take down others.

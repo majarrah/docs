@@ -1,0 +1,65 @@
+---
+title: "What You Can Do"
+description: "A tour of Majarrah's MCP tools organized by role."
+---
+
+## Everyone
+
+- `whoami` — see who you're signed in as and which roles are active.
+- `ping` — health check that echoes a message.
+
+## As a buyer or investor
+
+- `buyer_search_properties` — full-text + filter search over the live catalog.
+- `buyer_get_property` — full detail for one listing, including AI bullets.
+- `buyer_price_intel` — city/district median SAR/m² and how a given price compares.
+- `buyer_save_property` / `buyer_unsave_property` — bookmark listings.
+- `buyer_list_saved_properties` — your saved list.
+- `buyer_submit_inquiry` / `buyer_get_inquiry_thread` / `buyer_send_inquiry_message` / `buyer_list_my_inquiries` — full message threads with the broker.
+- `buyer_book_viewing` / `buyer_check_viewing_availability` / `buyer_list_my_viewings` / `buyer_submit_viewing_survey` — end-to-end viewing flow.
+- `buyer_reveal_broker_phone` — reveal a broker's number (workspace pays a phone-reveal credit if applicable).
+
+## As a broker
+
+Everything a buyer can do, plus:
+
+- `broker_list_properties` / `broker_get_property` / `broker_create_property` / `broker_update_property` / `broker_delete_property` — your inventory.
+- `broker_list_inquiries` / `broker_get_inquiry_thread` / `broker_reply_to_inquiry` / `broker_update_inquiry_status` — inquiry inbox.
+- `broker_list_bookings` / `broker_update_booking_status` — viewing calendar.
+- `broker_list_crm_leads` / `broker_update_lead_stage` — CRM pipeline.
+- `workspace_get_settings` / `workspace_update_settings` — your agency profile, viewing window, verification.
+- `workspace_list_members` / `workspace_invite_member` / `workspace_update_member_role` / `workspace_remove_member` — team.
+- `workspace_list_api_keys` / `workspace_create_api_key` / `workspace_delete_api_key` — API keys.
+- `workspace_get_credit_balance` — current credit balance.
+
+## As a developer
+
+- All buyer tools, plus:
+- Project CRUD, widget config, knowledge base management, inbox reads, lead promotion — the same surface your team uses in the developer dashboard.
+
+## As a platform admin
+
+Additive on top of your buyer/broker/developer tools:
+
+- Full moderation queues (listings, FAL, CR).
+- `admin_list_workspaces` / `admin_update_workspace` / `admin_grant_workspace_trial`.
+- Ghost broker seeding: `admin_upsert_ghost_broker`, `admin_import_ghost_property`, `admin_create_ghost_invite`, `admin_send_ghost_invite_email`.
+- Guided workflow prompt: `seed_ghost_broker_from_listing` — feed it an external listing URL and Claude runs the whole scrape → seed → invite flow.
+
+<Note>
+  Admin tools only appear when your email is on the Majarrah platform admin allow-list.
+</Note>
+
+## Examples
+
+**"Find me a villa under 2M SAR in North Riyadh with at least 4 bedrooms."**
+Claude calls `buyer_search_properties` with the filters and returns matches with AI bullets.
+
+**"What's the median price per m² in Al Yasmin?"**
+Claude calls `buyer_price_intel` with a plausible listing and returns the district benchmark.
+
+**"Reply to inquiry #abc123 saying we can offer a viewing Thursday at 6pm."**
+Claude calls `broker_reply_to_inquiry` and, if you say yes, also creates the viewing with `buyer_check_viewing_availability` + `buyer_book_viewing`.
+
+**"Seed a ghost broker from `https://sa.aqar.fm/…`"**
+As an admin, invoke the `seed_ghost_broker_from_listing` prompt with the URL. Claude scrapes, dedupes by FAL id, imports the listing, and gives you back a claim link to send.

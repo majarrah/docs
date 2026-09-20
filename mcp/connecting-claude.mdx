@@ -1,0 +1,63 @@
+---
+title: "Connecting Claude"
+description: "Add Majarrah as an MCP connector in Claude in under a minute."
+---
+
+## Prerequisites
+
+- A Majarrah account. If you don't have one, [sign up](https://www.majarrah.io) first.
+- Claude Desktop, or claude.ai on the web.
+
+## claude.ai (web)
+
+<Steps>
+  <Step title="Open Connectors">
+    Click your avatar → **Settings** → **Connectors**.
+  </Step>
+  <Step title="Add a custom connector">
+    Click **Add custom connector**.
+  </Step>
+  <Step title="Fill in the details">
+    - **Name**: Majarrah
+    - **Server URL**: `https://api.majarrah.io/mcp`
+    - **Auth**: OAuth
+  </Step>
+  <Step title="Authorize">
+    You'll be redirected to Majarrah, asked to sign in if you're not already, and shown exactly which permissions Claude is requesting. Review, then **Authorize**.
+  </Step>
+  <Step title="Test it">
+    Back in Claude, type "use Majarrah MCP to whoami". You should see your email, roles, and workspaces.
+  </Step>
+</Steps>
+
+## Claude Desktop
+
+Same flow — open **Settings → Connectors → Add custom** and use the same URL. Claude Desktop stores the OAuth token locally and refreshes it automatically.
+
+## What permissions does Claude ask for?
+
+The consent screen shows a role-scoped list:
+
+- **Every user**: search, saved lists, inquiries, viewings, phone reveal, price intel, basic profile
+- **If you're a broker**: workspace listings, CRM, team, API keys, credits
+- **If you're a developer**: projects, widget config, knowledge base, inbox
+- **If you're a platform admin**: full moderation and workspace management
+
+<Note>
+  You can revoke access at any time from Claude's connector settings, or from Majarrah at **Dashboard → Settings → Connections**.
+</Note>
+
+## Troubleshooting
+
+**"whoami" says I'm a buyer but I'm a broker.**
+Sign in to Majarrah in your browser first, then re-authorize the connector. Roles are read at the moment you authorize.
+
+**Claude can't find the admin tools.**
+Admin tools only appear if your email is on the Majarrah admin allow-list. Reach out to `support@majarrah.io` if you believe you should have admin access.
+
+**I can't scroll to the top of the consent screen.**
+Make sure your browser window is at least 700 px tall. The card scrolls internally when content overflows.
+
+<Card title="What can you do once connected?" icon="sparkles" href="/mcp/what-you-can-do">
+  A tour of the tools available at each role tier.
+</Card>

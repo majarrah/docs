@@ -45,7 +45,10 @@
             "pages": [
               "buyers/search",
               "buyers/ai-agent",
+              "buyers/ai-reports",
               "buyers/inquiries",
+              "buyers/viewings",
+              "buyers/reveal-phone",
               "buyers/saved"
             ]
           },
@@ -67,9 +70,34 @@
               "brokers/listings",
               "brokers/inquiries",
               "brokers/bookings",
+              "brokers/crm",
+              "brokers/public-page",
+              "brokers/credits",
               "brokers/billing",
+              "brokers/api-keys",
               "brokers/whatsapp",
               "brokers/team"
+            ]
+          },
+          {
+            "group": "For Developers",
+            "pages": [
+              "developers/getting-started",
+              "developers/projects",
+              "developers/widget",
+              "developers/widget-knowledge-base",
+              "developers/widget-inbox",
+              "developers/team",
+              "developers/api-keys"
+            ]
+          },
+          {
+            "group": "Claude & MCP",
+            "pages": [
+              "mcp/overview",
+              "mcp/connecting-claude",
+              "mcp/what-you-can-do",
+              "mcp/oauth-flow"
             ]
           }
         ]
@@ -89,6 +117,24 @@
             "group": "Locations",
             "pages": [
               "api-reference/locations/search"
+            ]
+          },
+          {
+            "group": "Properties",
+            "pages": [
+              "api-reference/properties/search"
+            ]
+          },
+          {
+            "group": "Inquiries",
+            "pages": [
+              "api-reference/inquiries/create"
+            ]
+          },
+          {
+            "group": "Bookings",
+            "pages": [
+              "api-reference/bookings/create"
             ]
           },
           {

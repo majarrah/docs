@@ -1,0 +1,58 @@
+---
+title: "API Keys"
+description: "Server-to-server integration with your Majarrah workspace."
+---
+
+## What API keys are for
+
+An API key lets your own systems talk to Majarrah without a browser session. Common uses:
+
+- Sync inventory from your existing CRM
+- Push leads out to HubSpot / Salesforce / Zoho
+- Trigger AI decisions programmatically inside your workflows
+- Post new listings from a spreadsheet or ERP
+
+You don't need an API key just to use the dashboard or the Claude connector — those use your normal login.
+
+## Create a key
+
+<Steps>
+  <Step title="Open Settings → API Keys">
+    From your sidebar.
+  </Step>
+  <Step title="Click Create key">
+    Give it a label so you remember where it's used — e.g. `hubspot-sync`, `internal-crm`.
+  </Step>
+  <Step title="Copy the secret">
+    Shown once. Copy it into your secret manager before closing the dialog. It cannot be shown again.
+  </Step>
+</Steps>
+
+## Use it
+
+Every request includes the key in the `Authorization` header:
+
+```bash
+curl https://api.majarrah.io/v1/properties/... \
+  -H "Authorization: Bearer $MAJARRAH_API_KEY"
+```
+
+See [API Reference → Authentication](/api-reference/authentication) for the full request format, rate limits, and error shapes.
+
+## Rotate keys regularly
+
+Every key has a **Rotate** action. Rotation issues a new secret and leaves the old one valid for 24 hours, so you can swap without downtime.
+
+Rotate every 90 days as routine hygiene. Give every automation its own key so revoking one doesn't take down the others.
+
+## Revoke immediately if leaked
+
+If a key ever appears in a repo, a log, or a chat message — revoke it now. **Revoke** on the key's row invalidates it in seconds.
+
+<Note>
+  Never commit a Majarrah API key to source control. Store keys in your platform's secret manager (Vercel env, AWS Secrets Manager, 1Password, etc.).
+</Note>
+
+## Scopes and permissions
+
+Right now, keys are workspace-scoped and inherit the `owner` role — they can do anything your workspace can. Finer-grained scopes (read-only, listings-only, etc.) are on the roadmap.

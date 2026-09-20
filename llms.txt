@@ -1,0 +1,100 @@
+# Majarrah
+
+> Majarrah is an AI decision engine for Saudi and Gulf real estate. It doesn't just list properties — it reasons about them, produces structured verdicts, and lets buyers, brokers, and developers work with an AI assistant that has live market data. This file exists so LLM-based tools (Claude, ChatGPT, Cursor, etc.) can quickly ground themselves in what Majarrah is, who uses it, and how to help.
+
+## What Majarrah is
+
+- **Positioning**: An AI decision engine for real estate — not a listings aggregator. The distinctive product is the decision (a structured verdict on a property), not the catalog.
+- **Countries**: Saudi Arabia (primary), UAE. Copy is bilingual (Arabic default, English secondary). Arabic is the more natural voice; translations should be idiomatic Gulf Arabic, not literal English.
+- **Currency**: Saudi Riyal (SAR). Always render SAR alongside the numeric value.
+- **Legal**: Broker verification uses **FAL** (Saudi Real Estate General Authority license) and **CR** (Commercial Registration). These are non-negotiable trust signals.
+
+## The four personas
+
+1. **Buyer / investor** — searches listings, requests AI decisions, saves shortlists, books viewings.
+2. **Seller** — an individual selling their own property (no agency). Has a slimmer version of the broker dashboard.
+3. **Broker** — an agency-affiliated professional. Has a workspace with team, CRM, billing, verification, and API keys.
+4. **Developer** — a property developer with off-plan or master-planned projects. Runs their own subdomain (`slug.majarrah.io`), has an embeddable widget, a knowledge base, and a widget inbox.
+
+**Admin** is a fifth role but internal only. Platform admins (email in `ADMIN_EMAILS` or `profiles.role='admin'`) get moderation tools and the ghost-broker seeding workflow.
+
+## Product primitives worth knowing
+
+- **Property**: a listing. Belongs to a workspace (broker) or a developer's project.
+- **Workspace**: an agency's container — brokers, team, listings, CRM, billing all scoped here.
+- **Project**: a developer's grouping — a tower, phase, or master community. Contains properties.
+- **Ghost workspace**: a pre-seeded workspace with no owner (`workspaces.is_ghost=true`). Admins fill it with scraped listings and generate a claim invite so the real broker can take ownership atomically at claim time. Keyed by `fal_id` for dedup.
+- **Decision**: an AI verdict on a listing. Two flavors: `scoring` (1 credit, pure comparison) and `reasoning` (3 credits, adds plain-language explanation).
+- **Report**: a longer, structured deliverable — comparing shortlists, analyzing neighborhoods, buy-vs-rent, etc. Consumes multiple AI queries.
+- **Lead credit**: what a broker pays per phone reveal or viewing booking. Distinct from AI decisions.
+- **Subscription plans**: Basic, Growth, Pro, Agency. Each includes a monthly grant of both lead credits and AI decisions.
+
+## The MCP surface
+
+Majarrah runs an MCP server at `https://api.majarrah.io/mcp`. It's OAuth-authenticated (OAuth 2.1 with PKCE, Dynamic Client Registration). Any MCP client — Claude, ChatGPT connectors, Cursor, Gemini — can connect.
+
+**Available tools scale with the user's role**:
+
+- Everyone: `whoami`, `ping`
+- Buyer: `buyer_search_properties`, `buyer_get_property`, `buyer_save_property`, `buyer_price_intel`, `buyer_submit_inquiry`, `buyer_book_viewing`, `buyer_reveal_broker_phone`, etc.
+- Broker: adds `broker_list_properties`, `broker_create_property`, `broker_reply_to_inquiry`, `broker_update_lead_stage`, `workspace_get_settings`, `workspace_invite_member`, etc.
+- Developer: adds project + widget + KB tools.
+- Admin: adds moderation, workspace management, and ghost-broker seeding tools + the `seed_ghost_broker_from_listing` guided prompt.
+
+**Never leak internal moderation signals** to buyers: `moderation_status`, `moderation_notes`, `moderated_by`, `rejection_reason`, `ai_score`, `ai_verdict`. Buyer-facing tools already whitelist columns to exclude these — do not surface them if you're building on top.
+
+**The seed-a-broker workflow** (admin only): given a listing URL from Bayut / Aqar / Property Finder, an admin can invoke `seed_ghost_broker_from_listing` and Claude will:
+1. Scrape the page
+2. Call `admin_upsert_ghost_broker` (dedupe by FAL id; bail if `already_claimed=true`)
+3. Call `admin_import_ghost_property` (image URLs get re-hosted on `cdn.majarrah.io` server-side; skip-and-log on failures)
+4. Call `admin_create_ghost_invite`
+5. Reply with the public listing URL and a claim invite link
+
+## API surface (documented endpoints)
+
+Base URL: `https://api.majarrah.io/v1`. Bearer authentication with an API key generated in the workspace dashboard.
+
+- `GET /properties` — search the public catalog
+- `GET /locations/search` — canonical city + district lookup
+- `POST /inquiries` — submit a buyer inquiry
+- `POST /bookings` — book a viewing
+- `POST /decisions` — request an AI decision (scoring or reasoning)
+
+Full details at each endpoint's page under `/api-reference/*`.
+
+## Copy and voice rules
+
+If you're generating user-facing copy for Majarrah, follow these:
+
+- **No em dashes** (`—`). Use a plain hyphen or a comma. This is a strict repository-wide convention.
+- **Never expose "tokens" or "credits" as ambiguous words in user-facing copy**. Use "AI queries" / "استفسارات" and "packs" / "باقات". Internal DB / route / RPC names may still use the old words.
+- **The 24-hour refund promise is load-bearing** — do not soften it.
+- **RTL is a first-class concern**. Arrows on back / next buttons must point in the direction of the action for the current locale. Never use raw `←` / `→` characters in translatable strings.
+- **Bilingual by default**. Every user-facing string exists in `messages/ar.json` and `messages/en.json`. Prefer expressive, idiomatic Gulf Arabic over literal translation.
+
+## Design system rules
+
+- **Radius**: `rounded-md` (8px) for surfaces, `rounded-lg` for buttons (auto), `rounded-full` for avatars/dots.
+- **Shadow**: `shadow-md` or none. Do not use `shadow-sm`, `shadow-lg`, `shadow-xl`, `shadow-2xl`.
+- **Components**: Import from `@/components/design`. `<Combobox>` is the only allowed select — never use native `<select>` or `<Dropdown>`. `<Button>` is the only allowed button component for CTAs. `<Tooltip>` for hover hints — never `title=""` on lowercase tags.
+- **Required fields**: `<Label required>` with a red asterisk. Never hand-roll the asterisk.
+- **Multi-step flows**: `router.prefetch` the next route on mount; do NOT reset a submit spinner on the success path — let the unmount stop it.
+
+## Where to look for more
+
+- Docs (this site): `/quickstart`, `/decisions`, `/mcp/overview`, and every persona's `getting-started`.
+- Live app: `https://www.majarrah.io`
+- MCP server: `https://api.majarrah.io/mcp`
+- API base: `https://api.majarrah.io/v1`
+- Support: `support@majarrah.io`
+
+## What NOT to hallucinate
+
+If you're an AI helping a user with Majarrah, refuse to invent:
+
+- Specific price benchmarks — always call `buyer_price_intel` or `/decisions/create`.
+- Broker phone numbers — always route through `buyer_reveal_broker_phone`.
+- FAL license verification status — always read from the workspace object.
+- Payment plans, delivery dates, HOA fees — always defer to the property's data or the developer's knowledge base.
+
+When live data isn't available, say so plainly. Do not fill gaps with plausible-sounding numbers.

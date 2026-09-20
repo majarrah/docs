@@ -1,0 +1,71 @@
+---
+title: "Create an inquiry"
+api: "POST https://api.majarrah.io/v1/inquiries"
+description: "Submit a buyer inquiry against a property listing."
+---
+
+Creates a new inquiry thread between the authenticated user and the property's broker. Requires OAuth or API key authentication.
+
+## Request body
+
+<ParamField body="property_id" type="uuid" required>
+  The ID of the property to inquire about.
+</ParamField>
+
+<ParamField body="question" type="string" required>
+  The buyer's initial message. Plain text, up to 2000 characters.
+</ParamField>
+
+<ParamField body="preferred_contact" type="string">
+  One of `whatsapp`, `phone`, `email`. Defaults to `whatsapp`.
+</ParamField>
+
+## Response
+
+<ResponseField name="inquiry" type="object">
+  <Expandable title="Fields">
+    <ResponseField name="id" type="uuid" />
+    <ResponseField name="property_id" type="uuid" />
+    <ResponseField name="user_id" type="uuid" description="The buyer" />
+    <ResponseField name="broker_id" type="uuid" description="The listing's owner" />
+    <ResponseField name="question" type="string" />
+    <ResponseField name="status" type="string" description="Always 'open' on creation" />
+    <ResponseField name="created_at" type="ISO 8601 timestamp" />
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="charged" type="boolean">
+  Whether a lead credit was charged to the broker's workspace for this inquiry.
+</ResponseField>
+
+## Example
+
+```bash
+curl https://api.majarrah.io/v1/inquiries \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "property_id": "e39a8b2b-...",
+    "question": "Is the price negotiable? Is there parking?"
+  }'
+```
+
+```json
+{
+  "inquiry": {
+    "id": "a4b1c2d3-...",
+    "property_id": "e39a8b2b-...",
+    "status": "open",
+    "created_at": "2026-09-20T14:30:00Z"
+  },
+  "charged": true
+}
+```
+
+## Errors
+
+See [Error Reference](/api-reference/errors) for shared error codes. Endpoint-specific:
+
+- **`property_not_found`** — the `property_id` doesn't exist or is unpublished.
+- **`self_inquiry_forbidden`** — you can't inquire on your own listing.
+- **`rate_limited`** — max 10 inquiries per hour per buyer.
