@@ -12,6 +12,9 @@
   "background": {
     "decoration": "windows"
   },
+  "contextual": {
+    "options": ["copy", "view", "chatgpt", "claude"]
+  },
   "api": {
     "mdx": {
       "server": "https://api.majarrah.io/v1",
